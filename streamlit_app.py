@@ -141,7 +141,7 @@ class MaskDetectionProcessor(VideoProcessorBase):
 # ------------------- Streamlit UI -------------------
 st.set_page_config(page_title="Face Mask Detector", page_icon="😷", layout="centered")
 st.title("😷 Real-Time Face Mask Detector")
-st.write(""Allow camera access and place your face in front of the frame.")
+st.write("Allow camera access and place your face in front of the frame.")
 
 webrtc_streamer(
     key="mask-detector",

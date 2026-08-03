@@ -12,9 +12,29 @@ import urllib.request
 import av
 import cv2
 import numpy as np
+import requests
 import streamlit as st
 import tensorflow as tf
 from streamlit_webrtc import webrtc_streamer, WebRtcMode, VideoProcessorBase
+
+
+def get_ice_servers():
+    """Fetch TURN server credentials from metered.ca (needed for cloud deployment,
+    STUN alone often fails on Streamlit Community Cloud). Falls back to STUN-only
+    if secrets aren't configured (works locally, may fail when deployed)."""
+    api_key = st.secrets.get("METERED_API_KEY")
+    app_name = st.secrets.get("METERED_APP_NAME")
+
+    if api_key and app_name:
+        try:
+            url = f"https://{app_name}.metered.live/api/v1/turn/credentials?apiKey={api_key}"
+            response = requests.get(url, timeout=5)
+            response.raise_for_status()
+            return response.json()
+        except Exception as e:
+            st.warning(f"TURN server fetch fail hui, STUN-only fallback use ho raha hai: {e}")
+
+    return [{"urls": ["stun:stun.l.google.com:19302"]}]
 
 # ------------------- Config -------------------
 MODEL_PATH = "mask_detector_model.keras"
@@ -129,9 +149,7 @@ webrtc_streamer(
     video_processor_factory=MaskDetectionProcessor,
     media_stream_constraints={"video": True, "audio": False},
     async_processing=True,
-    rtc_configuration={
-        "iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
-    },
+    rtc_configuration={"iceServers": get_ice_servers()},
 )
 
 st.caption("Note: Pehli baar browser camera permission maangega — Allow dabao.")

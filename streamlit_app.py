@@ -141,7 +141,7 @@ class MaskDetectionProcessor(VideoProcessorBase):
 # ------------------- Streamlit UI -------------------
 st.set_page_config(page_title="Face Mask Detector", page_icon="😷", layout="centered")
 st.title("😷 Real-Time Face Mask Detector")
-st.write("Camera access allow karo aur apna face frame ke saamne rakho.")
+st.write(""Allow camera access and place your face in front of the frame.")
 
 webrtc_streamer(
     key="mask-detector",
@@ -152,4 +152,4 @@ webrtc_streamer(
     rtc_configuration={"iceServers": get_ice_servers()},
 )
 
-st.caption("Note: Pehli baar browser camera permission maangega — Allow dabao.")
+st.caption("Note: The browser will ask for camera permission for the first time — Click Allow.")
